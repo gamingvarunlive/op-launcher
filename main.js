@@ -21,7 +21,7 @@ const FRIEND_SERVER_URL = process.env.OP_FRIEND_SERVER || '';
 // 2) Paste its Application ID below.
 // 3) In that application: Rich Presence -> Art Assets, upload 2 images with these exact keys:
 //      logo  (your launcher logo, 512x512+)      head  (a default player head image)
-const DISCORD_CLIENT_ID = '';
+const DISCORD_CLIENT_ID = '1561196153557753906';
 
 // Player head shown on the Discord activity. {name} is replaced with the profile's username.
 // Works for any real Minecraft username (offline/custom skins cannot be hosted, so those show the default head).
