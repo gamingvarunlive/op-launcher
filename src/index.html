@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://cdn.modrinth.com; style-src 'self'; script-src 'self'" />
+  <title>Op Launcher</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="home-black">
+  <div class="bg"></div>
+  <div class="bg-dim"></div>
+
+  <!-- Custom title bar -->
+  <header class="titlebar">
+    <div class="title-left">
+      <img src="../assets/logo.png" class="title-logo" alt="" />
+      <span>Op Launcher</span>
+    </div>
+    <div class="title-right">
+      <button class="user-chip none" id="user-chip" title="No profile selected">
+        <canvas class="chip-head" id="chip-head" width="64" height="64"></canvas>
+        <span id="chip-name">No profile</span>
+      </button>
+      <button class="win-btn" id="btn-min" title="Minimize">
+        <svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+      </button>
+      <button class="win-btn" id="btn-max" title="Maximize">
+        <svg class="ico-max" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
+        <svg class="ico-restore" viewBox="0 0 24 24"><rect x="5" y="9" width="10" height="10" rx="1.5"/><path d="M9 9V6.5A1.5 1.5 0 0 1 10.5 5H17.5A1.5 1.5 0 0 1 19 6.5V13.5A1.5 1.5 0 0 1 17.5 15H15"/></svg>
+      </button>
+      <button class="win-btn close" id="btn-close" title="Close">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="nav-top">
+        <img src="../assets/logo-transparent.png" class="side-logo" alt="Op Launcher" draggable="false" />
+        <button class="nav-btn active" data-page="home" aria-label="Home">
+          <svg viewBox="0 0 24 24"><rect x="2.8" y="6.5" width="18.4" height="11" rx="5.5"/><path d="M8 10.5v3M6.5 12h3"/><circle cx="15.3" cy="10.8" r=".9" class="fill"/><circle cx="17.6" cy="13.2" r=".9" class="fill"/></svg>
+          <span class="tip">Home</span>
+        </button>
+        <button class="nav-btn" data-page="profile" aria-label="Profile">
+          <svg viewBox="0 0 24 24"><path d="M12 4 4 8l8 4 8-4z"/><path d="M4 12l8 4 8-4"/><path d="M4 16l8 4 8-4"/></svg>
+          <span class="tip">Profile</span>
+        </button>
+        <button class="nav-btn" data-page="friends" aria-label="Friends">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.5 2.4 3.8 5.2 3.8 8.5s-1.3 6.1-3.8 8.5c-2.5-2.4-3.8-5.2-3.8-8.5S9.5 5.9 12 3.5z"/></svg>
+          <span class="tip">Friends</span>
+        </button>
+        <button class="nav-btn nav-gap" data-page="mods" aria-label="Mods">
+          <svg viewBox="0 0 24 24"><path d="M10 4.5a2 2 0 1 1 4 0V6h3.5A1.5 1.5 0 0 1 19 7.5V11h-1.5a2 2 0 1 0 0 4H19v3.5a1.5 1.5 0 0 1-1.5 1.5H14v-1.5a2 2 0 1 0-4 0V20H6.5A1.5 1.5 0 0 1 5 18.5V15h1.5a2 2 0 1 0 0-4H5V7.5A1.5 1.5 0 0 1 6.5 6H10z"/></svg>
+          <span class="tip">Mods</span>
+        </button>
+      </div>
+
+      <div class="nav-bottom">
+        <div class="divider"></div>
+        <button class="nav-btn" data-page="settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24"><path d="M4.5 16.5a8.5 8.5 0 1 1 15 0"/><path d="M12 14l3.5-4.5"/><circle cx="12" cy="14.5" r="1.2" class="fill"/></svg>
+          <span class="tip">Settings</span>
+        </button>
+        <div class="app-ver" id="app-ver">v1.0.0</div>
+      </div>
+    </nav>
+
+    <!-- Pages -->
+    <main class="content">
+
+      <!-- ===================== HOME ===================== -->
+      <section class="page active" id="page-home">
+
+        <!-- 3D stage -->
+        <div class="stage-wrap hero">
+          <div class="stage" id="stage">
+            <div class="stage-aura"></div>
+            <div class="disc"></div>
+            <div class="particles" id="particles"></div>
+            <canvas class="skin-canvas" id="skin-canvas"></canvas>
+
+            <div class="stage-empty" id="stage-empty" hidden>
+              <div class="se-title">No profile yet</div>
+              <div class="se-sub">Create a profile to see your skin here.</div>
+              <button class="btn-primary" id="btn-empty-create">Create profile</button>
+            </div>
+          </div>
+
+          <div class="stage-info">
+            <div class="eyebrow">SELECTED PROFILE</div>
+            <div class="stage-name" id="stage-name">-</div>
+            <div class="stage-meta" id="stage-meta"></div>
+          </div>
+
+          <!-- Launch area: the button turns into a status card while the game starts -->
+          <div class="launch" id="launch" data-state="idle">
+            <button class="play-btn" id="btn-play">
+              <svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>
+              <span>LAUNCH GAME</span>
+            </button>
+
+            <div class="progress-card" id="progress" aria-live="polite">
+              <div class="pc-top">
+                <div class="pc-title" id="pc-title">Preparing...</div>
+                <div class="pc-pct" id="pc-pct">0%</div>
+              </div>
+              <div class="pc-bar"><div class="pc-fill" id="pc-fill"></div></div>
+              <div class="pc-bottom">
+                <div class="pc-detail" id="pc-detail"></div>
+                <div class="pc-actions">
+                  <button class="pc-action" id="pc-console" type="button">Console</button>
+                  <button class="pc-action" id="pc-action" type="button">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="home-cols">
+          <div class="panel">
+            <div class="sec-head">
+              <div class="section-title">LATEST NEWS</div>
+              <button class="link-btn" id="news-all" type="button">View all News</button>
+            </div>
+            <div class="news-grid" id="news-grid"></div>
+          </div>
+
+          <div class="panel">
+            <div class="sec-head">
+              <div class="section-title">FRIENDS</div>
+              <button class="link-btn" id="friends-all" type="button">View Friends List</button>
+            </div>
+            <div class="friends-mini" id="friends-mini" hidden></div>
+            <div class="friends-empty" id="friends-empty">
+              <svg viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19c.5-3.2 2.8-5 5.5-5s5 1.8 5.5 5"/><path d="M16.5 6.2a3 3 0 0 1 0 5.6"/><path d="M18 14.3c1.7.5 2.8 2 3.2 4.2"/></svg>
+              <b>No friends yet</b>
+              Friend system coming soon.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== FRIENDS ===================== -->
+      <section class="page" id="page-friends">
+        <h2>Friends</h2>
+        <p class="sub">Add friends, send requests and see who is online.</p>
+        <div class="empty-box soon">
+          <div class="soon-title">Coming soon</div>
+          The friend system will show up here.
+        </div>
+        <!-- Friend UI is built but switched off until the friend server is ready -->
+        <div hidden id="fr-legacy">
+        <div class="page-head">
+          <div>
+            <h2>Friends</h2>
+            <p class="sub">Keep your squad in one place. Add players by their Minecraft username.</p>
+          </div>
+        </div>
+
+        <div class="fr-banner" id="fr-banner" hidden></div>
+
+        <form class="fr-add" id="fr-form" autocomplete="off">
+          <input type="text" id="fr-name" placeholder="Minecraft username" maxlength="16" spellcheck="false" aria-label="Friend username" />
+          <input type="text" id="fr-note" placeholder="Note (optional)" maxlength="60" aria-label="Note" />
+          <button class="btn-primary" type="submit" id="fr-submit">+ Add Friend</button>
+        </form>
+        <div class="form-error" id="fr-error" hidden></div>
+        <p class="fr-hint" id="fr-hint" hidden>Your friend needs to have created an Op Launcher profile with the same username.</p>
+
+        <div class="fr-sec" id="fr-req-head" hidden>REQUESTS</div>
+        <div class="fr-list" id="fr-req"></div>
+
+        <div class="fr-tools" id="fr-tools" hidden>
+          <input type="text" id="fr-search" placeholder="Search friends" aria-label="Search friends" spellcheck="false" />
+          <div class="fr-count" id="fr-count"></div>
+        </div>
+        <div class="fr-list" id="fr-list"></div>
+
+        <div class="empty-box" id="fr-empty">
+          <b>No friends yet</b><br />Type a username above and press the button.
+        </div>
+
+        <div class="fr-sec" id="fr-sent-head" hidden>SENT REQUESTS</div>
+        <div class="fr-list" id="fr-sent"></div>
+        </div>
+      </section>
+
+      <!-- ===================== MODS ===================== -->
+      <section class="page" id="page-mods">
+        <div class="page-head">
+          <div>
+            <h2>Mods</h2>
+            <p class="sub" id="mods-sub">Manage the mods of your selected profile.</p>
+          </div>
+          <button class="btn-ghost" id="mods-folder" type="button">Open Mods Folder</button>
+        </div>
+
+        <div class="mod-tabs" role="tablist">
+          <button class="mod-tab active" id="mt-list" role="tab" aria-selected="true" type="button">Mods List</button>
+          <button class="mod-tab" id="mt-browse" role="tab" aria-selected="false" type="button">Browse Mods</button>
+        </div>
+
+        <div id="mods-list-view">
+          <div class="mod-tools" id="mod-tools">
+            <input type="text" id="mod-search" placeholder="Search mods" aria-label="Search mods" spellcheck="false" />
+            <div class="fr-count" id="mod-count"></div>
+            <button class="link-btn" id="mod-refresh" type="button">Refresh</button>
+          </div>
+          <div class="mod-list" id="mod-list"></div>
+          <div class="empty-box" id="mod-empty" hidden></div>
+        </div>
+
+        <div id="mods-browse-view" hidden>
+          <div class="br-top">
+            <input type="text" id="br-search" placeholder="Search mods on Modrinth" aria-label="Search Modrinth" spellcheck="false" />
+            <span class="br-chip" id="br-chip" title="Only mods that work with your selected profile are shown"></span>
+          </div>
+          <div class="br-bar">
+            <label class="br-sel"><span>Sort by:</span>
+              <select id="br-sort">
+                <option value="relevance">Relevance</option>
+                <option value="downloads">Downloads</option>
+                <option value="follows">Follows</option>
+                <option value="newest">Newest</option>
+                <option value="updated">Recently updated</option>
+              </select>
+            </label>
+            <label class="br-sel"><span>View:</span>
+              <select id="br-view">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="50">50</option>
+              </select>
+            </label>
+            <div class="br-pager" id="br-pager"></div>
+          </div>
+          <div class="br-list" id="br-list"></div>
+          <div class="empty-box" id="br-empty" hidden></div>
+        </div>
+      </section>
+
+      <!-- ===================== SETTINGS ===================== -->
+      <section class="page" id="page-settings">
+        <h2>Settings</h2>
+        <p class="sub">Customize how Op Launcher stores files and runs the game.</p>
+
+        <div class="set-list">
+
+          <div class="set-card">
+            <div class="set-title">Game Directory</div>
+            <div class="set-desc">Where all launcher files are stored: game versions, mods, assets and profiles.</div>
+            <div class="path-row">
+              <div class="path-box" id="gamedir">-</div>
+              <button class="btn-ghost" id="btn-browse">Browse</button>
+              <button class="btn-ghost" id="btn-opendir">Open</button>
+            </div>
+          </div>
+
+          <div class="set-card">
+            <div class="set-top">
+              <div>
+                <div class="set-title">Memory Allocation</div>
+                <div class="set-desc">How much RAM the game can use. 3 GB is the default.</div>
+              </div>
+              <div class="ram-val" id="ram-val">3 GB</div>
+            </div>
+            <div class="ram-row">
+              <button class="step-btn" id="ram-minus" aria-label="Decrease RAM">-</button>
+              <input type="range" class="slider" id="ram-slider" min="2" max="16" step="0.5" value="3" aria-label="RAM in GB" />
+              <button class="step-btn" id="ram-plus" aria-label="Increase RAM">+</button>
+            </div>
+            <div class="ram-scale"><span>2 GB</span><span id="ram-max">16 GB</span></div>
+            <div class="ram-note" id="ram-note"></div>
+          </div>
+
+          <div class="set-card">
+            <div class="toggle-row">
+              <div>
+                <div class="set-title">Performance Mode</div>
+                <div class="set-desc">Turns off animations and effects and stops the 3D model from auto-rotating. Best for low-end PCs.</div>
+              </div>
+              <button class="switch" id="sw-perf" role="switch" aria-checked="false" aria-label="Performance Mode"><span></span></button>
+            </div>
+            <div class="toggle-sep"></div>
+            <div class="toggle-row">
+              <div>
+                <div class="set-title">Close launcher when the game starts</div>
+                <div class="set-desc">Frees up memory while you play. Op Launcher closes as soon as Minecraft has started. Not used for profiles with a custom skin: the launcher has to stay open to show it in game.</div>
+              </div>
+              <button class="switch" id="sw-close" role="switch" aria-checked="false" aria-label="Close launcher when the game starts"><span></span></button>
+            </div>
+            <div class="toggle-sep"></div>
+            <div class="toggle-row">
+              <div>
+                <div class="set-title">Show activity on Discord</div>
+                <div class="set-desc">Shows "Playing Minecraft" with your version and username on your Discord profile while you play. The launcher has to stay open for this to show.</div>
+              </div>
+              <button class="switch" id="sw-discord" role="switch" aria-checked="true" aria-label="Show activity on Discord"><span></span></button>
+            </div>
+            <div class="toggle-sep"></div>
+            <div class="toggle-row">
+              <div>
+                <div class="set-title">Show my name tag</div>
+                <div class="set-desc">Shows your own name above your head when you look at yourself in third person (F5). Needs the Op Client mod, which Op Launcher adds to your profile.</div>
+              </div>
+              <button class="switch" id="sw-ownname" role="switch" aria-checked="true" aria-label="Show my name tag"><span></span></button>
+            </div>
+          </div>
+
+          <div class="set-card">
+            <div class="toggle-row">
+              <div>
+                <div class="set-title">Updates</div>
+                <div class="set-desc" id="upd-desc">Op Launcher checks for new versions by itself.</div>
+              </div>
+              <button class="btn-ghost" id="btn-update-check" type="button">Check for updates</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ===================== PROFILES ===================== -->
+      <section class="page" id="page-profile">
+        <div class="page-head">
+          <div>
+            <h2>Profiles</h2>
+            <p class="sub">Create profiles and choose the one you want to play with.</p>
+          </div>
+          <button class="btn-primary" id="btn-new-profile">+ New Profile</button>
+        </div>
+
+        <div class="profile-grid" id="profile-grid"></div>
+
+        <div class="empty-box" id="profile-empty" hidden>
+          No profiles yet. Click <b>New Profile</b> to create your first one.
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Update dialog -->
+  <div class="modal-overlay" id="update-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="up-title">
+      <div class="modal-title" id="up-title">Update available</div>
+      <div class="up-ver" id="up-ver"></div>
+      <div class="up-notes" id="up-notes" hidden></div>
+      <div class="up-bar" id="up-bar" hidden><div class="up-fill" id="up-fill"></div></div>
+      <div class="up-status" id="up-status"></div>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="up-later" type="button">Remind me later</button>
+        <button class="btn-primary" id="up-now" type="button">Update now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New profile dialog -->
+  <div class="modal-overlay" id="modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-title" id="modal-title">New Profile</div>
+
+      <label class="field">
+        <span>Profile name</span>
+        <input type="text" id="f-name" maxlength="24" placeholder="My PvP Profile" autocomplete="off" />
+      </label>
+
+      <div class="field-row">
+        <label class="field">
+          <span>Version</span>
+          <select id="f-version"></select>
+        </label>
+        <label class="field">
+          <span>Mod loader</span>
+          <input type="text" value="Fabric" disabled />
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Username</span>
+        <input type="text" id="f-user" maxlength="16" placeholder="Player" autocomplete="off" spellcheck="false" />
+      </label>
+
+      <div class="field">
+        <span>Skin</span>
+        <div class="skin-pick">
+          <canvas id="f-head" class="head-canvas" width="64" height="64"></canvas>
+          <div class="skin-pick-info">
+            <div class="skin-name" id="f-skinname">Default skin</div>
+            <div class="skin-btns">
+              <button class="btn-ghost small" id="f-skin-choose" type="button">Choose skin (.png)</button>
+              <button class="btn-ghost small" id="f-skin-reset" type="button" hidden>Use default</button>
+            </div>
+          </div>
+        </div>
+        <div class="field-hint">A custom skin also shows inside the game. The launcher stays open while you play so it can show it.</div>
+      </div>
+
+      <div class="form-error" id="f-error" hidden></div>
+
+      <div class="modal-actions">
+        <button class="btn-ghost" id="f-cancel" type="button">Cancel</button>
+        <button class="btn-primary" id="f-create" type="button">Create Profile</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="news-data.js"></script>
+  <script src="skin3d.js"></script>
+  <script src="renderer.js"></script>
+  <script src="profiles.js"></script>
+  <script src="settings.js"></script>
+  <script src="friends.js"></script>
+  <script src="mods.js"></script>
+  <script src="updates.js"></script>
+  <script src="browse.js"></script>
+  <script src="home.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+{
+  "name": "op-launcher",
+  "version": "1.0.0",
+  "description": "Op Launcher - lightweight Minecraft PvP launcher",
+  "main": "main.js",
+  "author": "Op Launcher",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --publish never"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.oplauncher.app",
+    "productName": "Op Launcher",
+    "copyright": "Op Launcher",
+    "directories": { "output": "dist" },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "lib/**/*",
+      "src/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "assets/icon.ico",
+      "artifactName": "Op-Launcher-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Op Launcher",
+      "uninstallDisplayName": "Op Launcher"
+    },
+    "publish": [{ "provider": "github", "owner": "gamingvarunlive", "repo": "op-launcher" }]
+  }
+}
